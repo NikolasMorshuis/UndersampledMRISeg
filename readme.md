@@ -18,7 +18,7 @@ As the K2S dataset did only provide an undersampling mask of 8x, we had to gener
 The corresponding code that we used can be found [here](nnunet/dataset_conversion/create_masks.py).
 
 ### Network architectures
-The network architectures that we used for the reconstruction and segmentation methods will be [here](nnunet/training/network_training).
+The network architectures that we used for the reconstruction and segmentation methods will be [here](nnunet/training/network_training/nnUNet_variants/paper_methods).
 
 # Citation
 If you find this repository useful, please consider citing our paper:
