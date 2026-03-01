@@ -152,6 +152,58 @@ def crop_2D_image_force_fg(img, crop_size, valid_voxels):
     return result
 
 
+class SimpleDataloader(SlimDataLoaderBase):
+    """ Used primarily to load complete unaugmented validation set elements """
+    def __init__(self, data, batch_size, memmap_mode="r"):
+        super(SimpleDataloader, self).__init__(data, batch_size, None)
+        self.data_elements = list(self._data.keys())
+        self.indices = np.arange(len(self.data_elements))
+        self.through = False
+        self.memmap_mode = memmap_mode
+
+    def reinitialize(self):
+        self.indices = np.arange(len(self.data_elements))
+
+
+    def generate_train_batch(self):
+        # cases are stored as npz, but we require unpack_dataset to be run. This will decompress them into npy
+        # which is much faster to access
+        assert(self.batch_size==1)
+        if len(self.indices)>=self.batch_size:
+            selected_keys = self.indices[0:self.batch_size]
+            self.indices = self.indices[self.batch_size:]
+        else:
+            selected_keys = self.indices[0:]
+            self.through = True
+        for i in selected_keys:
+            # currently we need a batch size of 1 here!
+
+            seg = np.zeros((1,1,416, 416, 160))
+            data = np.zeros_like(seg)
+
+            if isfile(self._data[self.data_elements[i]]['data_file'][:-4] + ".npy"):
+                case_all_data = np.load(self._data[self.data_elements[i]]['data_file'][:-4] + ".npy", self.memmap_mode)
+            else:
+                case_all_data = np.load(self._data[self.data_elements[i]]['data_file'])['data']
+
+            case_properties = []
+            if 'properties' in self._data[self.data_elements[i]].keys():
+                properties = self._data[self.data_elements[i]]['properties']
+            else:
+                properties = load_pickle(self._data[self.data_elements[i]]['properties_file'])
+            case_properties.append(properties)
+
+            data_pre = np.expand_dims(case_all_data[0:1], 0)
+            data[:,:,:,:,:] = np.copy(data_pre[:,:,18:434, 18:434, 20:180])
+            seg_pre = np.expand_dims(case_all_data[1:2], 0)
+            seg[:,:,:,:,:] = np.copy(seg_pre[:,:,18:434, 18:434, 20:180])
+
+            if len(self.indices)==0:
+                self.reinitialize()
+                print('Dataloader was reinitialized!')
+        return {'data': data, 'seg': seg, 'properties': case_properties, 'keys': selected_keys}
+
+
 class DataLoader3D(SlimDataLoaderBase):
     def __init__(self, data, patch_size, final_patch_size, batch_size, has_prev_stage=False,
                  oversample_foreground_percent=0.0, memmap_mode="r", pad_mode="edge", pad_kwargs_data=None,
