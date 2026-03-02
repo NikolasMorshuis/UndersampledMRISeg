@@ -8,7 +8,7 @@ The code is largely based on the nnU-Net framework, on which we built most of th
 If you are unfamiliar with the nnU-Net framework, please visit their GitHub repository for helpful documentations and tutorials [here](https://github.com/MIC-DKFZ/nnUNet/tree/nnunetv1).
 Note that we are using nnU-Net Version 1.
 
-## Data
+## Data and Pre-Trained Weights
 The paper uses two datasets: The [K2S dataset](https://k2s.grand-challenge.org/) and the [SKM-TEA dataset](https://aimi.stanford.edu/datasets/skm-tea-knee-mri). 
 Note that the K2S dataset unfortunately is [not public anymore](https://k2s.grand-challenge.org/Data/#we-are-not-sharing-any-data-after-the-challenge-has-been-concluded).
 
@@ -19,6 +19,9 @@ The corresponding code that we used can be found [here](nnunet/dataset_conversio
 
 ### Network architectures
 The network architectures that we used for the reconstruction and segmentation methods will be [here](nnunet/training/network_training/nnUNet_variants/paper_methods).
+
+### Pre-trained weights
+Pre-trained weights for all model configurations can be found [here](https://drive.google.com/file/d/1a_625X1nKBQEAtxoS0ACAcBpVtPV4LLV/view?usp=sharing)
 
 # Citation
 If you find this repository useful, please consider citing our paper:
